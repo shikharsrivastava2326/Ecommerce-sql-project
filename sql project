@@ -1,0 +1,60 @@
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(100),
+    city VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE products (
+    product_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_name VARCHAR(100),
+    category VARCHAR(50),
+    price DECIMAL(10,2),
+    stock INT
+);
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    order_date DATE,
+    total_amount DECIMAL(10,2),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+CREATE TABLE order_details (
+    order_detail_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10,2),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+CREATE TABLE payments (
+    payment_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    payment_method VARCHAR(50),
+    payment_status VARCHAR(50),
+    payment_date DATE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);INSERT INTO users (name, email, password, city)
+VALUES 
+('Ayush', 'ayush@gmail.com', '1234', 'Prayagraj'),
+('Rahul', 'rahul@gmail.com', 'abcd', 'Delhi');
+
+INSERT INTO products (product_name, category, price, stock)
+VALUES
+('Laptop', 'Electronics', 50000, 10),
+('Mobile', 'Electronics', 20000, 20),
+('Shoes', 'Fashion', 3000, 50);
+SELECT * FROM users;
+SELECT u.name, o.order_id, o.total_amount
+FROM users u
+JOIN orders o ON u.user_id = o.user_id;
+SELECT product_id, SUM(quantity) AS total_sold
+FROM order_details
+GROUP BY product_id
+ORDER BY total_sold DESC;
+CREATE VIEW order_summary AS
+SELECT o.order_id, u.name, o.total_amount
+FROM orders o
+JOIN users u ON o.user_id = u.user_id;
